@@ -6,16 +6,16 @@ URLS = ['https://www.python.org', 'https://www.google.com',
 
 
 async def countdown(name, delay):
-    print(f"Запуск таймера {name} на {delay} секунд")
+    print(f"Start timer {name} with {delay} seconds")
     for i in range(delay, 0, -1):
-        print(f"{name}: {i} секунд осталось")
+        print(f"{name}: {i} seconds left")
         await asyncio.sleep(1)
-    print(f"Таймер {name} завершен")
+    print(f"Timer {name} finished")
 
 
 async def racer(name, delay):
     await asyncio.sleep(delay)
-    print(f"{name} финишировал после {delay} секунд")
+    print(f"{name} finished after {delay} seconds")
 
 
 async def check_status(url):
@@ -26,64 +26,64 @@ async def check_status(url):
                     print(f"{url}: OK")
                 else:
                     print(
-                        f"{url}: Не удалось подключиться, статус {response.status}")
+                        f"{url}: Connection failed, status {response.status}")
     except Exception as e:
-        print(f"{url}: недоступен: {e}")
+        print(f"{url}: Unreachable: {e}")
 
 
 async def long_running_task():
-    print("Фоновая задача начала работу...")
+    print("Background task started...")
     await asyncio.sleep(3)
-    print("Фоновая задача завершена")
+    print("Background task finished...")
 
 
-async def coock():
+async def cook():
     async def prepare_ingredients():
-        print("Подготовка ингредиентов...")
+        print("Preparing ingredients...")
         await asyncio.sleep(2)
-        print("Ингредиенты готовы.")
+        print("Ingredients ready.")
 
     async def fry_meat():
-        print("Жарка мяса...")
+        print("Frying meat...")
         await asyncio.sleep(3)
-        print("Мясо жарено.")
+        print("Meat fried.")
 
     async def boil_rice():
-        print("Варка риса...")
+        print("Boiling rice...")
         await asyncio.sleep(4)
-        print("Рис сварен.")
+        print("Rice boiled.")
 
-    print("Starting coock...")
+    print("Starting cook...")
     start_time = asyncio.get_event_loop().time()
     await prepare_ingredients()
     await asyncio.gather(fry_meat(), boil_rice())
     end_time = asyncio.get_event_loop().time()
-    print(f"Coock finished in {end_time - start_time} seconds.")
+    print(f"Cook finished in {end_time - start_time} seconds.")
 
 
-async def main(run_func='coock'):
+async def main(run_func='cook'):
     match run_func:
-        case 'coock':
-            await coock()
+        case 'cook':
+            await cook()
         case 'long_task':
             task = asyncio.create_task(long_running_task())
-            print("Основная программа продолжает работу...")
+            print("Main program is running...")
             count = 5
             while count > 0:
-                print(f"Фоновая задача выполнена: {task.done()}")
-                print("Основная программа работает...")
+                print(f"Background task is done: {task.done()}")
+                print("Main program is working...")
                 await asyncio.sleep(1)
                 count -= 1
             await task
-            print("Основная программа завершена.")
+            print("Main program finished.")
 
         case 'check_status':
             await asyncio.gather(*[check_status(url) for url in URLS])
         case 'racer':
             await asyncio.gather(
-                racer("Гонщик 1", 3),
-                racer("Гонщик 2", 5),
-                racer("Гонщик 3", 2),
+                racer("Racer 1", 3),
+                racer("Racer 2", 5),
+                racer("Racer 3", 2),
             )
         case 'countdown':
             await asyncio.gather(countdown('timer 1', 5), countdown('timer 2', 3))
