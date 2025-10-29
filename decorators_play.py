@@ -20,17 +20,22 @@ class TotalCounter:
 def timeit(func=None, *, print_results=False, is_async=False):
     """Decorator to measure execution time of async and regular functions."""
     def decorator_timeit(f):
-        start_time = time.perf_counter()
         if is_async:
             @wraps(f)
-            async def wrapper_timeit(*args, **kwargs):
-                return _calculate_time(f, await f(*args, **kwargs))
+            async def wrapper_timeit_async(*args, **kwargs):
+                start_time = time.perf_counter()
+                result = await f(*args, **kwargs)
+                return _calculate_time(f, result, start_time)
+            wrapper = wrapper_timeit_async
         else:
             @wraps(f)
             def wrapper_timeit(*args, **kwargs):
-                return _calculate_time(f, f(*args, **kwargs))
+                start_time = time.perf_counter()
+                result = f(*args, **kwargs)
+                return _calculate_time(f, result, start_time)
+            wrapper = wrapper_timeit
 
-        def _calculate_time(func, result):
+        def _calculate_time(func, result, start_time):
             if result and print_results:
                 print("-----")
                 print(result)
@@ -39,7 +44,7 @@ def timeit(func=None, *, print_results=False, is_async=False):
             run_time = end_time - start_time
             print(f"Function {func.__name__!r} ready for {run_time:.4f} seconds")
             return result
-        return wrapper_timeit
+        return wrapper
 
     # Case 1: The decorator was called without arguments, so the function is passed directly.
     if func is not None:
